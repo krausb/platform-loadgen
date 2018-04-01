@@ -9,8 +9,14 @@ lazy val `streamarchitect-io-platform-loadgen` =
     .settings(settings)
     .settings(
       libraryDependencies ++= Seq(
-        library.scalaCheck % Test,
-        library.utest      % Test
+        library.ScalaCheck,
+        library.ScalaTest,
+        library.TypesafeConfig,
+        library.Mockito,
+        library.GatlingHighcharts,
+        library.GatlingTestFramework,
+        library.MqttGatling,
+        library.MqttPahoClient
       )
     )
 
@@ -21,11 +27,29 @@ lazy val `streamarchitect-io-platform-loadgen` =
 lazy val library =
   new {
     object Version {
-      val scalaCheck = "1.13.5"
-      val utest      = "0.6.3"
+      val scala          = "2.11.12"
+      val scalaTest      = "3.0.1"
+      val mockito        = "1.10.19"
+      val scalaCheck     = "1.13.5"
+      val log4j          = "2.8.1"
+      val typesafeConfig = "1.3.1"
+
+      val gatling             = "2.3.0"
+      val mqttGatlingProtocol = "1.2"
+      val mqttPahoClient      = "1.2.0"
     }
-    val scalaCheck = "org.scalacheck" %% "scalacheck" % Version.scalaCheck
-    val utest      = "com.lihaoyi"    %% "utest"      % Version.utest
+    val ScalaCheck     = "org.scalacheck"           %% "scalacheck"  % Version.scalaCheck % Test
+    val ScalaTest      = "org.scalatest"            %% "scalatest"   % Version.scalaTest % Test
+    val Log4jCore      = "org.apache.logging.log4j" % "log4j-core"   % Version.log4j
+    val Log4j          = "org.apache.logging.log4j" % "log4j-api"    % Version.log4j
+    val TypesafeConfig = "com.typesafe"             % "config"       % Version.typesafeConfig
+    val Mockito        = "org.mockito"              % "mockito-core" % Version.mockito % Test
+
+    val GatlingHighcharts    = "io.gatling.highcharts" % "gatling-charts-highcharts" % Version.gatling
+    val GatlingTestFramework = "io.gatling"            % "gatling-test-framework"    % Version.gatling
+
+    val MqttGatling    = "com.github.jeanadrien" %% "gatling-mqtt-protocol"         % Version.mqttGatlingProtocol
+    val MqttPahoClient = "org.eclipse.paho"      % "org.eclipse.paho.client.mqttv3" % Version.mqttPahoClient
   }
 
 // *****************************************************************************
@@ -39,7 +63,7 @@ lazy val settings =
 lazy val commonSettings =
   Seq(
     // scalaVersion from .travis.yml via sbt-travisci
-    // scalaVersion := "2.12.4",
+    scalaVersion := "2.11.12",
     organization := "io.streamarchitect",
     organizationName := "Bastian Kraus",
     startYear := Some(2018),
