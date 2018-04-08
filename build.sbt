@@ -16,7 +16,9 @@ lazy val `streamarchitect-io-platform-loadgen` =
         library.GatlingHighcharts,
         library.GatlingTestFramework,
         library.MqttGatling,
-        library.MqttPahoClient
+        library.MqttPahoClient,
+        library.codecGpx,
+        library.platformDomain
       )
     )
 
@@ -35,7 +37,7 @@ lazy val library =
       val typesafeConfig = "1.3.1"
 
       val gatling             = "2.3.0"
-      val mqttGatlingProtocol = "1.2"
+      val mqttGatlingProtocol = "1.1.0"
       val mqttPahoClient      = "1.2.0"
 
       val platformDomain      = "1.0.0-SNAPSHOT"

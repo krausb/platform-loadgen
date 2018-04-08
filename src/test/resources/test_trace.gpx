@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<gpx version="1.1" creator="Endomondo.com" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd" xmlns="http://www.topografix.com/GPX/1/1" xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v1" xmlns:gpxx="http://www.garmin.com/xmlschemas/GpxExtensions/v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <metadata>
+    <author>
+      <name>Bastian Kraus</name>
+    </author>
+    <link href="http://www.endomondo.com">
+      <text>Endomondo</text>
+    </link>
+    <time>2018-04-02T09:09:28Z</time>
+  </metadata>
+  <trk>
+    <src>http://www.endomondo.com/</src>
+    <link href="https://www.endomondo.com/users/1784141/workouts/1091740995">
+      <text>endomondo</text>
+    </link>
+    <type>CYCLING_SPORT</type>
+    <trkseg>
+      <trkpt lat="48.774982" lon="11.619932">
+        <time>2018-03-30T14:28:07Z</time>
+      </trkpt>
+      <trkpt lat="48.774982" lon="11.619932">
+        <ele>391.491</ele>
+        <time>2018-03-30T14:28:08Z</time>
+      </trkpt>
+      <trkpt lat="48.774893" lon="11.619776">
+        <ele>397.938</ele>
+        <time>2018-03-30T14:30:28Z</time>
+      </trkpt>
+      <trkpt lat="48.774877" lon="11.619711">
+        <ele>398.081</ele>
+        <time>2018-03-30T14:30:40Z</time>
+      </trkpt>
+      <trkpt lat="48.77481" lon="11.619694">
+        <ele>398.158</ele>
+        <time>2018-03-30T14:30:43Z</time>
+      </trkpt>
+      <trkpt lat="48.774746" lon="11.619722">
+        <ele>398.212</ele>
+        <time>2018-03-30T14:30:45Z</time>
+      </trkpt>
+      <trkpt lat="48.774669" lon="11.619812">
+        <ele>398.718</ele>
+        <time>2018-03-30T14:30:47Z</time>
+      </trkpt>
+      <trkpt lat="48.77463" lon="11.619866">
+        <ele>398.897</ele>
+        <time>2018-03-30T14:30:48Z</time>
+      </trkpt>
+      <trkpt lat="48.774593" lon="11.619938">
+        <ele>399.05</ele>
+        <time>2018-03-30T14:30:49Z</time>
+      </trkpt>
+      <trkpt lat="48.774507" lon="11.62018">
+        <ele>399.386</ele>
+        <time>2018-03-30T14:30:52Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
