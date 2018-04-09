@@ -36,12 +36,9 @@ package io.streamarchitect.platform.loadgen
 
 import io.streamarchitect.platform.domain.codec.DomainCodec
 import io.streamarchitect.platform.domain.telemetry.PositionedTelemetry
-import io.streamarchitect.platform.loadgen.payload.{ GpxPayloadGenerator, PayloadGenerator }
+import io.streamarchitect.platform.loadgen.payload.{GpxPayloadGenerator, PayloadGenerator}
 import org.apache.logging.log4j.LogManager
-import org.scalatest.{ MustMatchers, WordSpecLike }
-
-import scala.io.Source
-import scala.reflect.io.{ File, Path }
+import org.scalatest.{MustMatchers, WordSpecLike}
 
 /**
   * Test Spec for a Payload Generator
@@ -65,14 +62,14 @@ class GpxPayloadGeneratorSpec extends WordSpecLike with MustMatchers {
       val gpxPayloadGenerator: PayloadGenerator = getPayloadGenerator
 
       val payload = gpxPayloadGenerator.generatePayload("123", "456")
-
-      val decodecEntity = DomainCodec.decode(payload, PositionedTelemetry.SCHEMA$)
+      log.debug(s"${payload}")
+      val decodecEntity: PositionedTelemetry = DomainCodec.decode(payload, PositionedTelemetry.SCHEMA$)
       log.debug(s"Decoded entity: ${decodecEntity}")
     }
 
   }
 
   private def getPayloadGenerator(): PayloadGenerator =
-    GpxPayloadGenerator(File(getClass.getResource("/test_trace.gpx").getFile))
+    new GpxPayloadGenerator().init(getClass.getResource("/test_trace.gpx").getFile)
 
 }

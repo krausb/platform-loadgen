@@ -17,34 +17,34 @@
 
 package io.streamarchitect.platform.loadgen.payload
 
+import com.typesafe.scalalogging.Logger
 import io.streamarchitect.codec.gpx.GpxCodec
 import io.streamarchitect.platform.domain.codec.DomainCodec
-import io.streamarchitect.platform.domain.telemetry.{ Meta, Position, PositionedTelemetry }
+import io.streamarchitect.platform.domain.telemetry.{Meta, Position, PositionedTelemetry}
 import io.streamarchitect.platform.model.WptType
-
-import scala.reflect.io.File
 
 /**
   * Gpx Payload Generator
   */
 class GpxPayloadGenerator extends PayloadGenerator {
 
+  private val log = Logger(getClass)
+
   var gpxTrkItems: Seq[WptType] = Seq.empty
 
   var counter = 0
 
-  override def init(payloadFile: File): Unit = {
-    val gpx = GpxCodec.decode(payloadFile.lines().mkString)
-    gpxTrkItems = gpx.trk(0).trkseg(0).trkpt
-  }
+  override def init(payload: String): PayloadGenerator =
+    try {
+      log.debug(s"Initializing GpxPayloadGenerator with file: ${payload}")
+      val gpx = GpxCodec.decode(payload)
+      gpxTrkItems = gpx.trk(0).trkseg(0).trkpt
+      this.asInstanceOf[PayloadGenerator]
+    } catch {
+      case t: Throwable =>
+        throw t
+    }
 
-  /**
-    * Generate payload based on an internal [[Iterator]] which emits
-    *
-    * @param deviceId
-    * @param sessionId
-    * @return
-    */
   override def generatePayload(deviceId: String, sessionId: String): Array[Byte] = {
     val trkItem = gpxTrkItems(getCurrentCounter())
     val payload = PositionedTelemetry(
@@ -58,22 +58,16 @@ class GpxPayloadGenerator extends PayloadGenerator {
       None
     )
 
+    log.debug(s"generatePayload(${payload} ...")
+
     DomainCodec.encode(payload)
   }
+
+  override def getDemoPayloadFilePath(): String = "/demo.gpx"
 
   private def getCurrentCounter(): Integer = {
     counter = (counter + 1) % gpxTrkItems.length
     counter
-  }
-
-}
-
-object GpxPayloadGenerator {
-
-  def apply(file: File): GpxPayloadGenerator = {
-    val pg = new GpxPayloadGenerator
-    pg.init(file)
-    pg
   }
 
 }

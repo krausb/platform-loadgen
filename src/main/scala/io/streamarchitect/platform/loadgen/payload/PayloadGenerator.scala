@@ -17,7 +17,11 @@
 
 package io.streamarchitect.platform.loadgen.payload
 
-import scala.reflect.io.File
+import java.io.FileInputStream
+
+import io.streamarchitect.platform.loadgen.LoadgenConfig
+
+import scala.io.Source
 
 /**
   * Trait for implementing a payload generator
@@ -27,9 +31,9 @@ trait PayloadGenerator {
   /**
     * Payload generator initialization with payload from a given file
     *
-    * @param payloadFile
+    * @param payload
     */
-  def init(payloadFile: File): Unit = ???
+  def init(payload: String): PayloadGenerator = ???
 
   /**
     * Generate Payload for data ingest
@@ -39,5 +43,43 @@ trait PayloadGenerator {
     * @return
     */
   def generatePayload(deviceId: String, sessionId: String): Array[Byte] = ???
+
+  /**
+    * Get the filepath to a demo payload file
+    *
+    * @return
+    */
+  def getDemoPayloadFilePath(): String = ???
+
+}
+
+/**
+  * Factory for creating a payload generator
+  */
+object PayloadGenerator {
+
+  /**
+    * Create a [[PayloadGenerator]]
+    *
+    * @param pkg
+    * @param clazz
+    * @return
+    */
+  def apply(pkg: String, clazz: String): PayloadGenerator = {
+    val payloadGen = Class.forName(s"${pkg}.${clazz}").newInstance().asInstanceOf[PayloadGenerator]
+
+    val payload = Source.fromInputStream(
+      LoadgenConfig.config.getBoolean("payloadGen.useDemoPayload") match {
+        case true =>
+          getClass.getResourceAsStream(payloadGen.getDemoPayloadFilePath())
+        case _ =>
+          Source.fromInputStream(new FileInputStream(getPayloadFile())).asInstanceOf[FileInputStream]
+      }
+    ).getLines().mkString
+    payloadGen.init(payload)
+  }
+
+  private def getPayloadFile(): String =
+    LoadgenConfig.config.getString("payloadGen.payload")
 
 }

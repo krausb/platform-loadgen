@@ -19,7 +19,8 @@ lazy val `streamarchitect-io-platform-loadgen` =
         library.MqttPahoClient,
         library.codecGpx,
         library.platformDomain
-      )
+      ),
+      libraryDependencies ++= library.log
     )
 
 // *****************************************************************************
@@ -33,10 +34,11 @@ lazy val library =
       val scalaTest      = "3.0.1"
       val mockito        = "1.10.19"
       val scalaCheck     = "1.13.5"
-      val log4j          = "2.8.1"
+      val logback        = "1.2.3"
+      val scalaLogging   = "3.8.0"
       val typesafeConfig = "1.3.1"
 
-      val gatling             = "2.3.0"
+      val gatling             = "2.2.5"
       val mqttGatlingProtocol = "1.1.0"
       val mqttPahoClient      = "1.2.0"
 
@@ -45,10 +47,12 @@ lazy val library =
     }
     val ScalaCheck     = "org.scalacheck"           %% "scalacheck"  % Version.scalaCheck % Test
     val ScalaTest      = "org.scalatest"            %% "scalatest"   % Version.scalaTest % Test
-    val Log4jCore      = "org.apache.logging.log4j" % "log4j-core"   % Version.log4j
-    val Log4j          = "org.apache.logging.log4j" % "log4j-api"    % Version.log4j
-    val TypesafeConfig = "com.typesafe"             % "config"       % Version.typesafeConfig
     val Mockito        = "org.mockito"              % "mockito-core" % Version.mockito % Test
+
+    val TypesafeConfig = "com.typesafe"             % "config"       % Version.typesafeConfig
+
+    val logback          = "ch.qos.logback"             %   "logback-classic"           % Version.logback
+    val scalaLogging     = "com.typesafe.scala-logging" %%  "scala-logging"             % Version.scalaLogging
 
     val GatlingHighcharts    = "io.gatling.highcharts" % "gatling-charts-highcharts" % Version.gatling
     val GatlingTestFramework = "io.gatling"            % "gatling-test-framework"    % Version.gatling
@@ -58,6 +62,28 @@ lazy val library =
 
     val platformDomain = "io.streamarchitect"    %% "streamarchitect-io-platform-domain" % Version.platformDomain
     val codecGpx       = "io.streamarchitect"    %% "codec-gpx"                          % Version.codecGpx
+
+    val log = Seq(logback, scalaLogging)
+
+    /**
+      * Listing of the dependencies that are being globally excluded
+      */
+    object GlobalExclusions {
+
+      val commonsLogging = "commons-logging"          % "commons-logging"
+      val logbackClassic = "ch.qos.logback"           % "logback-classic"
+      val logbackCore    = "ch.qos.logback"           % "logback-core"
+      val tinyLog        = "org.tinylog"              % "tinylog"
+      val log4j1         = "log4j"                    % "log4j"
+      val log4jextras    = "log4j"                    % "apache-log4j-extras"
+      val log4j2         = "org.apache.logging.log4j" % "log4j-slf4j-impl"
+      val slf4jlog4j12   = "org.slf4j"                % "slf4j-log4j12"
+
+      val log4j1deps    = Seq(log4j1, log4jextras, slf4jlog4j12, log4j2)
+      val logExclusions = Seq(commonsLogging, logbackClassic, tinyLog) ++ log4j1deps
+
+    }
+
   }
 
 // *****************************************************************************
@@ -84,9 +110,9 @@ lazy val commonSettings =
       "-language:_",
       "-target:jvm-1.8",
       "-encoding", "UTF-8",
-      "-Ypartial-unification",
       "-Ywarn-unused-import"
     ),
+    excludeDependencies ++= library.GlobalExclusions.logExclusions,
     Compile / unmanagedSourceDirectories := Seq((Compile / scalaSource).value),
     Test / unmanagedSourceDirectories := Seq((Test / scalaSource).value),
     credentials += credentialsProvider(),

@@ -17,38 +17,49 @@
 
 package io.streamarchitect.platform.loadgen
 
+import java.util.UUID.randomUUID
+
+import com.github.jeanadrien.gatling.mqtt.Predef._
+import com.typesafe.scalalogging.Logger
 import io.gatling.core.Predef._
 import io.gatling.core.scenario.Simulation
-import io.gatling.core.session._
-import com.github.jeanadrien.gatling.mqtt.Predef._
+import io.streamarchitect.platform.loadgen.payload.PayloadGenerator
 
 import scala.concurrent.duration._
 import scala.util.Random
-import java.util.UUID.randomUUID
 
 /**
   * MQTT Load Generator
   */
 class LoadgenRunner extends Simulation {
 
-  import LoadgenRunner.{ createDevices, createMqttMessage, createSessions }
+  private val log = Logger(getClass)
+
+  import LoadgenRunner.{createDevices, createSessions}
+
+  private val config = LoadgenConfig.config
 
   private val sessions = createSessions()
   private val devices  = createDevices()
   private val randGen  = new Random(1L)
+
+  private val payloadGen: PayloadGenerator =
+    PayloadGenerator(config.getString("payloadGen.package"), config.getString("payloadGen.class"))
 
   private val mqttMessageGenerator = forever {
     pace(500.milliseconds, 2000.milliseconds)
       .exec(session => {
         val deviceId    = devices(randGen.nextInt(devices.size))
         val sessionId   = sessions(randGen.nextInt(sessions.size))
-        val mqttMessage = createMqttMessage(deviceId, sessionId)
+        val mqttMessage = payloadGen.generatePayload(deviceId, sessionId)
+
+        log.debug(s"Message for device ${deviceId} and ${sessionId} with payload: ${mqttMessage}")
 
         session.setAll(("mqttMessage", mqttMessage))
       })
       .exec(
         publish(
-          "dev/test",
+          config.getString("mqtt.topic"),
           payload = session => session("mqttMessage").validate[Array[Byte]].get
         )
       )
@@ -60,8 +71,8 @@ class LoadgenRunner extends Simulation {
 
   setUp(
     loadgenScenario.inject(
-      rampUsers(10) over 10.minutes,
-      rampUsers(10) over 10.minutes
+      rampUsers(10) over 1.minutes,
+      rampUsers(10) over 1.minutes
     )
   ).protocols(MqttBrokerConnectionFactory.createMqttProtocol())
     .maxDuration(10.minutes)
@@ -94,8 +105,5 @@ object LoadgenRunner {
     * @return
     */
   def createSessions(): List[String] = randomUuids(numSessions)
-
-  def createMqttMessage(deviceId: String, sessionId: String): Array[Byte] =
-    s"{'deviceId':'${deviceId}','sessionId':'${sessionId}'}".getBytes
 
 }
